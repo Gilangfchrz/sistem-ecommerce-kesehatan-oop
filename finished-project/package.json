@@ -1,0 +1,51 @@
+{
+  "name": "health-ecommerce-testing-suite",
+  "version": "1.0.0",
+  "description": "Complete Testing Suite untuk Health E-Commerce MERN System",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --forceExit",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --forceExit",
+    "test:unit": "jest tests/unit --forceExit",
+    "test:integration": "jest tests/integration --forceExit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "tests/**/*.js",
+      "!tests/**/*.spec.js",
+      "!tests/setup.js"
+    ],
+    "coverageThresholds": {
+      "global": {
+        "branches": 75,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "testTimeout": 15000,
+    "verbose": true
+  },
+  "keywords": [
+    "jest",
+    "supertest",
+    "playwright",
+    "health-ecommerce",
+    "mern",
+    "testing"
+  ],
+  "author": "Pusbang Talenta Digital",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "@playwright/test": "^1.41.0",
+    "dotenv": "^16.3.1"
+  }
+}
