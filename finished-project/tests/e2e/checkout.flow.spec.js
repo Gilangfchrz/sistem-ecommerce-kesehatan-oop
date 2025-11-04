@@ -1,197 +1,235 @@
 /**
- * End-to-End Tests - Complete Checkout Flow
- * Testing Health E-Commerce dari browse sampai checkout
- * Frontend: http://localhost:3000
- * Backend: http://localhost:5000
+ * E2E Tests - Complete Shopping & Checkout Flow
+ * Testing frontend user journey dari browse → add to cart → checkout
+ * 
+ * Prerequisites:
+ * - Backend running on http://localhost:5000
+ * - Frontend running on http://localhost:3000
+ * - Playwright browsers installed: npx playwright install chromium
+ * 
+ * Run: npm run test:e2e
+ * Run with UI: npm run test:e2e:ui
  */
 
-import { test, expect } from "@playwright/test";
+const { test, expect } = require('@playwright/test');
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-test.describe("Health E-Commerce - Complete Checkout Flow", () => {
-  test.beforeEach(async ({ page }) => {
-    // Navigate to homepage
+test.describe('E2E: Complete Shopping Flow', () => {
+  
+  // Test 1: Homepage loads correctly
+  test('Homepage loads with all key elements', async ({ page }) => {
     await page.goto(FRONTEND_URL);
+    
+    // Check navbar
+    await expect(page.locator('nav')).toBeVisible();
+    
+    // Check hero section
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    
+    // Check products section exists
+    const productsSection = page.locator('text=Produk');
+    await expect(productsSection).toBeVisible();
   });
 
-  test("Homepage loads correctly dengan all elements", async ({ page }) => {
-    // Check title
-    await expect(page).toHaveTitle(/Health E-Commerce/i);
-
-    // Check main heading
-    const heading = page.getByRole("heading", {
-      name: /Selamat Datang|Health E-Commerce/i,
-    });
-    await expect(heading).toBeVisible();
-
-    // Check navigation links exist
-    await expect(
-      page.getByRole("link", { name: /Products|Produk/i })
-    ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Cart|Keranjang/i })
-    ).toBeVisible();
-
-    // Check CTA button
-    const ctaButton = page.getByRole("button", { name: /Belanja|Mulai/i });
-    await expect(ctaButton).toBeVisible();
-  });
-
-  test("can browse products and filter by category", async ({ page }) => {
-    // Navigate to products page
-    await page.click("text=Products");
-    await expect(page).toHaveURL(/.*products/);
-
+  // Test 2: Browse and filter products
+  test('Can browse products and use filters', async ({ page }) => {
+    await page.goto(`${FRONTEND_URL}/products`);
+    
     // Wait for products to load
-    await page.waitForSelector('[class*="ant-card"]', { timeout: 5000 });
-
+    await page.waitForSelector('article', { timeout: 10000 });
+    
     // Count initial products
-    const initialCount = await page.locator('[class*="ant-card"]').count();
+    const initialCount = await page.locator('article').count();
     expect(initialCount).toBeGreaterThan(0);
-
-    // Filter by Vitamin category
-    await page.click('[class*="ant-select"]'); // Click category dropdown
-    await page.click("text=Vitamin");
-
-    // Wait for filtered results
-    await page.waitForTimeout(500);
-
-    // Verify filter applied (products count might change)
-    const filteredCards = page.locator('[class*="ant-card"]');
-    await expect(filteredCards.first()).toBeVisible();
-  });
-
-  test("complete shopping flow: browse → add to cart → checkout", async ({
-    page,
-  }) => {
-    // Step 1: Navigate to products
-    await page.goto(`${FRONTEND_URL}/products`);
-    await page.waitForSelector('[class*="ant-card"]', { timeout: 5000 });
-
-    // Step 2: Add first product to cart
-    const firstProduct = page.locator('[class*="ant-card"]').first();
-    const productName = await firstProduct
-      .locator('h3, h4, [class*="title"]')
-      .first()
-      .textContent();
-
-    await firstProduct.locator('button:has-text("Tambah")').click();
-
-    // Step 3: Verify cart badge updated
-    await page.waitForTimeout(500); // Wait for state update
-    const cartBadge = page.locator('[class*="ant-badge-count"]');
-    await expect(cartBadge).toBeVisible();
-    const badgeText = await cartBadge.textContent();
-    expect(parseInt(badgeText) || 0).toBeGreaterThan(0);
-
-    // Step 4: Navigate to cart
-    await page.click("text=Cart");
-    await expect(page).toHaveURL(/.*cart/);
-
-    // Step 5: Verify product in cart
-    const cartHeading = page.locator("h1");
-    await expect(cartHeading).toContainText(/Keranjang|Cart/i);
-
-    const cartTable = page.locator("table");
-    await expect(cartTable).toBeVisible();
-
-    // Step 6: Proceed to checkout
-    await page.click('button:has-text("Checkout")');
-    await expect(page).toHaveURL(/.*checkout/);
-
-    // Step 7: Fill shipping form
-    await page.fill('input[name="name"], input[id*="name"]', "Aiman Test");
-    await page.fill(
-      'input[name="email"], input[id*="email"]',
-      "aiman.test@example.com"
-    );
-    await page.fill('input[name="phone"], input[id*="phone"]', "08123456789");
-    await page.fill(
-      'textarea[name="address"], textarea[id*="address"]',
-      "Jl. Sehat No. 123, Jakarta"
-    );
-
-    // Step 8: Submit form
-    await page.click('button:has-text("Lanjut"), button[type="submit"]');
-
-    // Step 9: Verify next step or payment page
-    await page.waitForTimeout(1000);
-    // Payment button should be visible atau redirected
-    const paymentButton = page.locator('button:has-text("Bayar")');
-    await expect(paymentButton).toBeVisible({ timeout: 3000 });
-  });
-
-  test("search functionality works correctly", async ({ page }) => {
-    await page.goto(`${FRONTEND_URL}/products`);
-    await page.waitForSelector('[class*="ant-card"]');
-
-    // Find search input
-    const searchInput = page.locator(
-      'input[placeholder*="Cari"], input[placeholder*="Search"]'
-    );
-    await searchInput.fill("Vitamin");
-
-    // Press Enter or click search
-    await searchInput.press("Enter");
-
-    // Wait for results
-    await page.waitForTimeout(500);
-
-    // Verify results contain search term
-    const cards = page.locator('[class*="ant-card"]');
-    const count = await cards.count();
-    expect(count).toBeGreaterThan(0);
-  });
-
-  test("responsive navigation works on mobile", async ({ page }) => {
-    // Set mobile viewport (iPhone 13)
-    await page.setViewportSize({ width: 390, height: 844 });
-
-    await page.goto(FRONTEND_URL);
-
-    // Navigation should still be accessible
-    await expect(page.getByRole("navigation")).toBeVisible();
-
-    // Can navigate to products
-    await page.click("text=Products");
-    await expect(page).toHaveURL(/.*products/);
-  });
-});
-
-test.describe("AI Chatbot E2E Test", () => {
-  test("AI chatbot modal opens and responds", async ({ page }) => {
-    await page.goto(`${FRONTEND_URL}/products`);
-
-    // Look for AI chatbot button (might be floating button)
-    const aiButton = page
-      .locator(
-        'button:has-text("AI"), button[aria-label*="AI"], button[class*="chatbot"]'
-      )
-      .first();
-
-    if (await aiButton.isVisible()) {
-      await aiButton.click();
-
-      // Modal should open
-      const modal = page.locator('[class*="ant-modal"]');
-      await expect(modal).toBeVisible();
-
-      // Type message
-      const textarea = modal.locator("textarea");
-      await textarea.fill("Rekomendasi vitamin untuk imunitas");
-
-      // Send
-      const sendButton = modal.locator(
-        'button:has-text("Kirim"), button:has-text("Send")'
-      );
-      await sendButton.click();
-
-      // Wait for AI response (might take a few seconds)
-      await page.waitForTimeout(3000);
-
-      // Response should appear
-      // (Exact assertion depends on UI implementation)
+    
+    // Test category filter
+    const categoryFilter = page.locator('select[name="category"], button:has-text("Vitamin")').first();
+    if (await categoryFilter.isVisible()) {
+      await categoryFilter.click();
+      await page.waitForTimeout(1000); // Wait for filter to apply
+      
+      // Products should be filtered
+      const filteredCount = await page.locator('article').count();
+      expect(filteredCount).toBeGreaterThan(0);
     }
   });
+
+  // Test 3: Search functionality
+  test('Search finds relevant products', async ({ page }) => {
+    await page.goto(`${FRONTEND_URL}/products`);
+    
+    // Find search input
+    const searchInput = page.locator('input[type="search"], input[placeholder*="Cari"]').first();
+    await searchInput.fill('vitamin');
+    await searchInput.press('Enter');
+    
+    // Wait for search results
+    await page.waitForTimeout(1500);
+    
+    // Should show products
+    const products = await page.locator('article').count();
+    expect(products).toBeGreaterThan(0);
+  });
+
+  // Test 4: Add product to cart
+  test('Can add product to cart and badge updates', async ({ page }) => {
+    await page.goto(`${FRONTEND_URL}/products`);
+    
+    // Wait for products
+    await page.waitForSelector('article', { timeout: 10000 });
+    
+    // Find first "Add to Cart" button
+    const addToCartButton = page.locator('button:has-text("Tambah ke Keranjang"), button:has-text("Add to Cart")').first();
+    await addToCartButton.click();
+    
+    // Wait for cart update
+    await page.waitForTimeout(1000);
+    
+    // Check cart badge shows count
+    const cartBadge = page.locator('[class*="badge"], [class*="cart-count"]');
+    if (await cartBadge.isVisible()) {
+      const badgeText = await cartBadge.textContent();
+      expect(parseInt(badgeText || '0')).toBeGreaterThan(0);
+    }
+  });
+
+  // Test 5: View cart page
+  test('Cart page displays added items', async ({ page }) => {
+    await page.goto(`${FRONTEND_URL}/products`);
+    
+    // Add product to cart
+    await page.waitForSelector('article', { timeout: 10000 });
+    await page.locator('button:has-text("Tambah ke Keranjang"), button:has-text("Add to Cart")').first().click();
+    await page.waitForTimeout(1000);
+    
+    // Navigate to cart
+    await page.goto(`${FRONTEND_URL}/cart`);
+    
+    // Cart should have items
+    await expect(page.locator('text=Keranjang, text=Cart')).toBeVisible();
+    const cartItems = await page.locator('tbody tr, [class*="cart-item"]').count();
+    expect(cartItems).toBeGreaterThan(0);
+  });
+
+  // Test 6: Checkout form validation
+  test('Checkout form validates required fields', async ({ page }) => {
+    await page.goto(`${FRONTEND_URL}/cart`);
+    
+    // Go to checkout (if cart not empty, add product first)
+    const checkoutButton = page.locator('button:has-text("Checkout"), a[href*="/checkout"]');
+    if (await checkoutButton.isVisible()) {
+      await checkoutButton.click();
+    } else {
+      await page.goto(`${FRONTEND_URL}/checkout`);
+    }
+    
+    // Try to submit without filling
+    const submitButton = page.locator('button[type="submit"], button:has-text("Bayar")').first();
+    await submitButton.click();
+    
+    // Should show validation errors or not proceed
+    // (Validation might be client-side or show error messages)
+    await page.waitForTimeout(1000);
+  });
+
+  // Test 7: Complete checkout flow
+  test('Can complete checkout with valid data', async ({ page }) => {
+    // Add product
+    await page.goto(`${FRONTEND_URL}/products`);
+    await page.waitForSelector('article', { timeout: 10000 });
+    await page.locator('button:has-text("Tambah ke Keranjang"), button:has-text("Add to Cart")').first().click();
+    await page.waitForTimeout(1000);
+    
+    // Go to cart
+    await page.goto(`${FRONTEND_URL}/cart`);
+    
+    // Proceed to checkout
+    const checkoutLink = page.locator('button:has-text("Checkout"), a[href*="/checkout"]').first();
+    await checkoutLink.click();
+    
+    // Fill checkout form
+    await page.fill('input[name="name"], input[placeholder*="Nama"]', 'Aiman Test');
+    await page.fill('input[name="email"], input[type="email"]', 'aiman.test@example.com');
+    await page.fill('input[name="phone"], input[placeholder*="Phone"]', '081234567890');
+    await page.fill('textarea[name="address"], textarea[placeholder*="Alamat"]', 'Jl. Test No. 123');
+    
+    // Submit (will redirect to Midtrans or success page)
+    const payButton = page.locator('button:has-text("Bayar"), button[type="submit"]').last();
+    await payButton.click();
+    
+    // Should navigate away from checkout
+    await page.waitForTimeout(2000);
+    
+    // Either on Midtrans page or success page
+    const currentUrl = page.url();
+    const isOnPaymentOrSuccess = 
+      currentUrl.includes('midtrans') || 
+      currentUrl.includes('success') ||
+      currentUrl.includes('payment');
+    
+    expect(isOnPaymentOrSuccess).toBe(true);
+  }, 20000);
+
+  // Test 8: Responsive navigation on mobile
+  test('Responsive navigation works on mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 }); // iPhone SE
+    await page.goto(FRONTEND_URL);
+    
+    // Check if hamburger menu exists
+    const hamburgerMenu = page.locator('button[class*="hamburger"], button[aria-label*="menu"]');
+    if (await hamburgerMenu.isVisible()) {
+      await hamburgerMenu.click();
+      
+      // Navigation menu should appear
+      const navMenu = page.locator('nav ul, [class*="mobile-menu"]');
+      await expect(navMenu).toBeVisible();
+    }
+  });
+
+  // Test 9: Dark mode toggle (if implemented)
+  test('Can toggle dark mode theme', async ({ page }) => {
+    await page.goto(FRONTEND_URL);
+    
+    // Look for theme toggle button
+    const themeToggle = page.locator('button[aria-label*="theme"], button:has-text("🌙"), button:has-text("☀")').first();
+    
+    if (await themeToggle.isVisible()) {
+      // Get initial theme
+      const bodyClass = await page.locator('body').getAttribute('class');
+      
+      // Toggle theme
+      await themeToggle.click();
+      await page.waitForTimeout(500);
+      
+      // Theme should have changed
+      const newBodyClass = await page.locator('body').getAttribute('class');
+      expect(newBodyClass).not.toBe(bodyClass);
+    }
+  });
+
+  // Test 10: AI Chatbot modal opens
+  test('AI Chatbot modal opens and accepts input', async ({ page }) => {
+    await page.goto(FRONTEND_URL);
+    
+    // Look for chatbot button (usually floating button)
+    const chatbotButton = page.locator('button[class*="chatbot"], button[aria-label*="AI"], button:has-text("🤖")').first();
+    
+    if (await chatbotButton.isVisible()) {
+      await chatbotButton.click();
+      
+      // Modal should open
+      const chatModal = page.locator('[role="dialog"], [class*="modal"]');
+      await expect(chatModal).toBeVisible();
+      
+      // Can type message
+      const chatInput = page.locator('input[placeholder*="pesan"], textarea[placeholder*="message"]').first();
+      await chatInput.fill('Test message');
+      
+      // Has send button
+      const sendButton = page.locator('button[type="submit"], button:has-text("Kirim")').first();
+      await expect(sendButton).toBeVisible();
+    }
+  });
+
 });

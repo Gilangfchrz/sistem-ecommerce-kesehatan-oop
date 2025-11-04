@@ -1,7 +1,7 @@
 {
-  "name": "health-ecommerce-complete-testing",
+  "name": "health-ecommerce-testing-starter",
   "version": "1.0.0",
-  "description": "Complete testing suite for Health E-Commerce MERN system",
+  "description": "Testing Suite Starter - Practice writing tests for Health E-Commerce",
   "main": "index.js",
   "scripts": {
     "test": "npm run test:unit && npm run test:integration",
@@ -10,16 +10,13 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:coverage": "jest --coverage --testTimeout=20000",
-    "test:watch": "jest --watch",
-    "lint": "echo 'Linting complete'",
-    "format": "echo 'Format complete'"
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "testing",
     "jest",
     "supertest",
     "playwright",
-    "e2e",
     "health-ecommerce"
   ],
   "author": "Pusbang Talenta Digital",
@@ -35,17 +32,8 @@
   "jest": {
     "testEnvironment": "node",
     "coverageDirectory": "coverage",
-    "collectCoverageFrom": [
-      "tests/**/*.js",
-      "!tests/**/*.spec.js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 85,
-        "statements": 85
-      }
-    }
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
   }
 }

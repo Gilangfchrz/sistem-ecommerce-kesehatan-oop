@@ -1,122 +1,116 @@
 /**
- * Integration Tests - Payment API
- * Testing Midtrans payment integration di Health E-Commerce
- * Backend: http://localhost:5000/api/external/payment
+ * Integration Tests - Payment API (Midtrans)
+ * Testing backend endpoint: POST /api/external/payment/create
+ * 
+ * Prerequisites:
+ * - Backend must be running on http://localhost:5000
+ * - MIDTRANS_SERVER_KEY must be configured in backend
+ * 
+ * Run: npm run test:integration
  */
 
 const request = require('supertest');
+
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
-describe('Health E-Commerce - Payment API (Midtrans)', () => {
+describe('Payment API - Integration Tests', () => {
   
-  describe('POST /api/external/payment/create', () => {
-    test('should create payment dengan data yang valid', async () => {
-      const paymentData = {
-        orderId: `TEST-ORDER-${Date.now()}`,
-        amount: 150000,
-        items: [
-          {
-            id: '1',
-            name: 'Vitamin C 1000mg',
-            price: 85000,
-            quantity: 1
-          },
-          {
-            id: '2',
-            name: 'Vitamin D3 2000 IU',
-            price: 65000,
-            quantity: 1
-          }
-        ],
-        customerDetails: {
-          name: 'Aiman Test',
-          email: 'aiman.test@example.com',
-          phone: '08123456789',
-          address: 'Jl. Sehat No. 123, Jakarta'
-        }
-      };
+  const validPaymentData = {
+    orderId: `ORDER-TEST-${Date.now()}`,
+    amount: 250000,
+    items: [
+      {
+        id: 'PROD-001',
+        name: 'Vitamin C 1000mg',
+        price: 85000,
+        quantity: 2
+      },
+      {
+        id: 'PROD-002',
+        name: 'Vitamin D3 2000 IU',
+        price: 120000,
+        quantity: 1
+      }
+    ],
+    customerDetails: {
+      firstName: 'Aiman',
+      lastName: 'Test',
+      email: 'aiman.test@example.com',
+      phone: '081234567890'
+    }
+  };
 
-      const response = await request(BASE_URL)
-        .post('/api/external/payment/create')
-        .send(paymentData)
-        .expect(200);
+  // Test 1: Create payment with valid data
+  test('POST /api/external/payment/create returns payment URL', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/external/payment/create')
+      .send(validPaymentData)
+      .expect(200);
 
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('paymentUrl');
-      expect(response.body).toHaveProperty('orderId', paymentData.orderId);
-      expect(response.body.paymentUrl).toMatch(/midtrans|snap/i);
-    }, 15000); // Extended timeout untuk Midtrans API
+    expect(response.body).toHaveProperty('success', true);
+    expect(response.body).toHaveProperty('data');
+    expect(response.body.data).toHaveProperty('paymentUrl');
+    expect(response.body.data).toHaveProperty('token');
+    expect(typeof response.body.data.paymentUrl).toBe('string');
+    expect(response.body.data.paymentUrl).toMatch(/https?:\/\//);
+  }, 10000);
 
-    test('should reject payment dengan amount negatif', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/external/payment/create')
-        .send({
-          orderId: 'INVALID-ORDER',
-          amount: -100000, // Negative amount
-          items: [],
-          customerDetails: {
-            name: 'Test',
-            email: 'test@example.com',
-            phone: '08123456789'
-          }
-        })
-        .expect(400);
+  // Test 2: Negative amount rejected
+  test('POST /api/external/payment/create rejects negative amount', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/external/payment/create')
+      .send({
+        ...validPaymentData,
+        amount: -100000
+      })
+      .expect(400);
 
-      expect(response.body.success).toBe(false);
-    });
-
-    test('should validate customer details', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/external/payment/create')
-        .send({
-          orderId: 'TEST-ORDER',
-          amount: 100000,
-          items: [],
-          customerDetails: {
-            // Missing name, email, phone
-          }
-        })
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toMatch(/required|wajib/i);
-    });
-
-    test('should validate items array', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/external/payment/create')
-        .send({
-          orderId: 'TEST-ORDER',
-          amount: 100000,
-          items: [], // Empty items
-          customerDetails: {
-            name: 'Test',
-            email: 'test@example.com',
-            phone: '08123456789'
-          }
-        })
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-    });
+    expect(response.body.success).toBe(false);
   });
 
-  describe('POST /api/external/payment/notification', () => {
-    test('should handle payment webhook notification', async () => {
-      const notification = {
-        order_id: 'TEST-ORDER-123',
-        transaction_status: 'settlement',
-        gross_amount: '100000',
-        signature_key: 'test_signature'
-      };
+  // Test 3: Missing customer details rejected
+  test('POST /api/external/payment/create requires customer details', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/external/payment/create')
+      .send({
+        orderId: `ORDER-${Date.now()}`,
+        amount: 100000,
+        items: []
+      })
+      .expect(400);
 
-      const response = await request(BASE_URL)
-        .post('/api/external/payment/notification')
-        .send(notification)
-        .expect(200);
-
-      expect(response.body).toHaveProperty('success');
-    });
+    expect(response.body.success).toBe(false);
   });
+
+  // Test 4: Empty items array rejected
+  test('POST /api/external/payment/create requires items', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/external/payment/create')
+      .send({
+        ...validPaymentData,
+        items: []
+      })
+      .expect(400);
+
+    expect(response.body.success).toBe(false);
+  });
+
+  // Test 5: Payment notification webhook (mock)
+  test('POST /api/external/payment/notification handles webhook', async () => {
+    // Mock Midtrans notification payload
+    const notificationPayload = {
+      order_id: `ORDER-TEST-${Date.now()}`,
+      status_code: '200',
+      transaction_status: 'settlement',
+      gross_amount: '250000.00'
+    };
+
+    const response = await request(BASE_URL)
+      .post('/api/external/payment/notification')
+      .send(notificationPayload)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('success', true);
+  });
+
 });
-

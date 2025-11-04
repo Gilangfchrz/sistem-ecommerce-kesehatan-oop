@@ -1,167 +1,146 @@
 /**
  * Integration Tests - Authentication API
- * Testing Health E-Commerce Auth endpoints (JWT)
- * Backend: http://localhost:5000
+ * Testing backend endpoints: POST /api/auth/register, /api/auth/login
+ * 
+ * Prerequisites: Backend must be running on http://localhost:5000
+ * Run: npm run test:integration
  */
 
 const request = require('supertest');
+
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
-describe('Health E-Commerce - Authentication API', () => {
+// Generate random email untuk avoid duplicates
+const generateTestEmail = () => {
+  const timestamp = Date.now();
+  return `test${timestamp}@example.com`;
+};
+
+describe('Authentication API - Integration Tests', () => {
   
-  let authToken;
+  let testUser = {
+    name: 'Test User',
+    email: generateTestEmail(),
+    password: 'Test123!@#'
+  };
 
-  describe('POST /api/auth/register', () => {
-    test('should register new user successfully', async () => {
-      const uniqueEmail = `test${Date.now()}@example.com`;
-      
-      const userData = {
-        email: uniqueEmail,
-        password: 'SecurePass123!',
-        name: 'Test User'
-      };
+  let authToken = '';
 
-      const response = await request(BASE_URL)
-        .post('/api/auth/register')
-        .send(userData)
-        .expect(201);
+  // Test 1: Register new user
+  test('POST /api/auth/register creates new user', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/auth/register')
+      .send(testUser)
+      .expect(201);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.user.email).toBe(uniqueEmail);
-      expect(response.body.user).toHaveProperty('name', 'Test User');
-      expect(response.body.user.password).toBeUndefined(); // Password tidak boleh di-return
-    });
-
-    test('should reject registration dengan email yang sudah terdaftar', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/auth/register')
-        .send({
-          email: 'aila@example.com', // Email dari seed data
-          password: 'SecurePass123!',
-          name: 'Duplicate User'
-        })
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toMatch(/already exists|sudah terdaftar/i);
-    });
-
-    test('should validate email format', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/auth/register')
-        .send({
-          email: 'invalid-email',
-          password: 'SecurePass123!',
-          name: 'Test'
-        })
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-    });
-
-    test('should validate password strength', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/auth/register')
-        .send({
-          email: 'test@example.com',
-          password: '123', // Too weak
-          name: 'Test'
-        })
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-    });
+    expect(response.body).toHaveProperty('success', true);
+    expect(response.body).toHaveProperty('data');
+    expect(response.body.data).toHaveProperty('token');
+    expect(response.body.data).toHaveProperty('user');
+    expect(response.body.data.user.email).toBe(testUser.email);
+    
+    // Save token for later tests
+    authToken = response.body.data.token;
   });
 
-  describe('POST /api/auth/login', () => {
-    test('should login dengan credentials yang benar', async () => {
-      const credentials = {
-        email: process.env.TEST_EMAIL || 'aila@example.com',
-        password: process.env.TEST_PASSWORD || 'Aila123!'
-      };
+  // Test 2: Duplicate email rejected
+  test('POST /api/auth/register rejects duplicate email', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/auth/register')
+      .send(testUser)
+      .expect(400);
 
-      const response = await request(BASE_URL)
-        .post('/api/auth/login')
-        .send(credentials)
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body).toHaveProperty('token');
-      expect(typeof response.body.token).toBe('string');
-      expect(response.body.token.length).toBeGreaterThan(20);
-
-      // Save token untuk test selanjutnya
-      authToken = response.body.token;
-    });
-
-    test('should reject login dengan password salah', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/auth/login')
-        .send({
-          email: 'aila@example.com',
-          password: 'WrongPassword123!'
-        })
-        .expect(401);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toMatch(/invalid|salah|incorrect/i);
-    });
-
-    test('should reject login untuk user yang tidak terdaftar', async () => {
-      const response = await request(BASE_URL)
-        .post('/api/auth/login')
-        .send({
-          email: 'notexist@example.com',
-          password: 'AnyPassword123!'
-        })
-        .expect(401);
-
-      expect(response.body.success).toBe(false);
-    });
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toMatch(/already|exists|duplicate/i);
   });
 
-  describe('GET /api/auth/profile', () => {
-    beforeAll(async () => {
-      // Login to get token
-      const loginResponse = await request(BASE_URL)
-        .post('/api/auth/login')
-        .send({
-          email: 'aila@example.com',
-          password: 'Aila123!'
-        });
-      
-      authToken = loginResponse.body.token;
-    });
+  // Test 3: Invalid email format
+  test('POST /api/auth/register validates email format', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/auth/register')
+      .send({
+        name: 'Test User',
+        email: 'invalid-email',
+        password: 'Test123!@#'
+      })
+      .expect(400);
 
-    test('should get user profile dengan valid token', async () => {
-      const response = await request(BASE_URL)
-        .get('/api/auth/profile')
-        .set('Authorization', `Bearer ${authToken}`)
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.user).toHaveProperty('email', 'aila@example.com');
-      expect(response.body.user).toHaveProperty('name');
-      expect(response.body.user).toHaveProperty('role');
-    });
-
-    test('should reject request tanpa token', async () => {
-      const response = await request(BASE_URL)
-        .get('/api/auth/profile')
-        .expect(401);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toMatch(/token|unauthorized/i);
-    });
-
-    test('should reject request dengan invalid token', async () => {
-      const response = await request(BASE_URL)
-        .get('/api/auth/profile')
-        .set('Authorization', 'Bearer invalid-token-here')
-        .expect(401);
-
-      expect(response.body.success).toBe(false);
-    });
+    expect(response.body.success).toBe(false);
   });
+
+  // Test 4: Weak password rejected
+  test('POST /api/auth/register validates password strength', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/auth/register')
+      .send({
+        name: 'Test User',
+        email: generateTestEmail(),
+        password: '123' // Too weak
+      })
+      .expect(400);
+
+    expect(response.body.success).toBe(false);
+  });
+
+  // Test 5: Login with correct credentials
+  test('POST /api/auth/login with correct credentials returns token', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/auth/login')
+      .send({
+        email: testUser.email,
+        password: testUser.password
+      })
+      .expect(200);
+
+    expect(response.body).toHaveProperty('success', true);
+    expect(response.body.data).toHaveProperty('token');
+    expect(response.body.data).toHaveProperty('user');
+  });
+
+  // Test 6: Login with wrong password
+  test('POST /api/auth/login with wrong password fails', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/auth/login')
+      .send({
+        email: testUser.email,
+        password: 'WrongPassword123'
+      })
+      .expect(401);
+
+    expect(response.body.success).toBe(false);
+  });
+
+  // Test 7: Login with non-existent email
+  test('POST /api/auth/login with non-existent email fails', async () => {
+    const response = await request(BASE_URL)
+      .post('/api/auth/login')
+      .send({
+        email: 'nonexistent@example.com',
+        password: 'Test123!@#'
+      })
+      .expect(401);
+
+    expect(response.body.success).toBe(false);
+  });
+
+  // Test 8: Get profile with valid token
+  test('GET /api/auth/profile with valid token returns user data', async () => {
+    const response = await request(BASE_URL)
+      .get('/api/auth/profile')
+      .set('Authorization', `Bearer ${authToken}`)
+      .expect(200);
+
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toHaveProperty('email', testUser.email);
+  });
+
+  // Test 9: Get profile without token fails
+  test('GET /api/auth/profile without token returns 401', async () => {
+    const response = await request(BASE_URL)
+      .get('/api/auth/profile')
+      .expect(401);
+
+    expect(response.body.success).toBe(false);
+  });
+
 });
-
