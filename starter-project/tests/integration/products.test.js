@@ -16,7 +16,7 @@ const request = require("supertest");
 const BASE_URL = process.env.BACKEND_URL || "http://localhost:5000";
 
 describe("Products API - Integration Tests (STARTER)", () => {
-  // ✅ Example test (already complete)
+  //  Example test (already complete)
   test("GET /health returns server status", async () => {
     const response = await request(BASE_URL).get("/health").expect(200);
 

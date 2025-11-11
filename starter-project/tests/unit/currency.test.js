@@ -39,7 +39,7 @@ const calculateTotal = (price, quantity, taxRate = 0.1) => {
 
 describe("Currency Utils - Unit Tests", () => {
   describe("formatCurrency", () => {
-    // ✅ Example test (already complete)
+    //  Example test (already complete)
     test("formats Indonesian Rupiah correctly", () => {
       const result = formatCurrency(85000);
       expect(result).toBe("Rp85.000");

@@ -21,7 +21,7 @@ const { test, expect } = require("@playwright/test");
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
 test.describe("E2E: Shopping Flow (STARTER)", () => {
-  // ✅ Example test (already complete)
+  //  Example test (already complete)
   test("Homepage loads correctly", async ({ page }) => {
     await page.goto(FRONTEND_URL);
 

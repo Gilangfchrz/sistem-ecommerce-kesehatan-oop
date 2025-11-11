@@ -1,4 +1,4 @@
-# 🧪 Health E-Commerce - Complete Testing Suite
+# Health E-Commerce - Complete Testing Suite
 
 > **Testing lengkap untuk sistem Health E-Commerce MERN (Backend + Frontend + AI + Payment)**
 
@@ -7,38 +7,38 @@
 [![Playwright](https://img.shields.io/badge/Playwright-1.41-green)](https://playwright.dev/)
 [![Coverage](https://img.shields.io/badge/Target-85%25-brightgreen)]()
 
-**Test suite lengkap untuk memastikan Health E-Commerce berjalan sempurna!** ✅
+**Test suite lengkap untuk memastikan Health E-Commerce berjalan sempurna!**
 
 ---
 
-## 🎯 Apa yang Ditest?
+## Apa yang Ditest?
 
 Testing suite ini mengcover **SELURUH SISTEM Health E-Commerce:**
 
 ### **Backend API Testing (Supertest)**
 
-- ✅ Products API (`/api/products`) - GET all, GET by ID, filters
-- ✅ Authentication API (`/api/auth`) - Register, login, profile
-- ✅ **AI Chatbot API** (`/api/external/ai/chat`) - Google Gemini
-- ✅ **Payment API** (`/api/external/payment`) - Midtrans integration
-- ✅ Health check endpoint
+- Products API (`/api/products`) - GET all, GET by ID, filters
+- Authentication API (`/api/auth`) - Register, login, profile
+- **AI Chatbot API** (`/api/external/ai/chat`) - Google Gemini
+- **Payment API** (`/api/external/payment`) - Midtrans integration
+- Health check endpoint
 
 ### **Frontend E2E Testing (Playwright)**
 
-- ✅ Homepage loading & navigation
-- ✅ Product browsing & filtering
-- ✅ Product search functionality
-- ✅ Add to cart flow
-- ✅ Complete checkout process
-- ✅ Responsive design (desktop + mobile)
-- ✅ AI chatbot interaction
+- Homepage loading & navigation
+- Product browsing & filtering
+- Product search functionality
+- Add to cart flow
+- Complete checkout process
+- Responsive design (desktop + mobile)
+- AI chatbot interaction
 
 **Total Tests:** 25+ integration tests + 10+ E2E tests  
 **Coverage Target:** 85%+
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -59,8 +59,8 @@ cd ../../../Frontend/Modul_3-UIUX_Best_Practices/finished-project
 npm install
 npm run dev     # Start frontend di port 3000
 
-# ✅ Backend: http://localhost:5000
-# ✅ Frontend: http://localhost:3000
+#  Backend: http://localhost:5000
+#  Frontend: http://localhost:3000
 ```
 
 ---
@@ -91,7 +91,7 @@ npm test
 
 ---
 
-## 🧪 Running Different Test Suites
+## Running Different Test Suites
 
 ### Unit Tests Only (Fast)
 
@@ -110,7 +110,7 @@ npm run test:unit
 
 ### Integration Tests (API Testing)
 
-**⚠️ Backend MUST be running!**
+** Backend MUST be running!**
 
 ```bash
 # Verify backend first
@@ -162,7 +162,7 @@ npm run test:integration
 
 ### E2E Tests (Full User Flow)
 
-**⚠️ Backend & Frontend HARUS running!**
+** Backend & Frontend HARUS running!**
 
 ```bash
 # Verify both running
@@ -215,7 +215,7 @@ npm run test:coverage
 
 ---
 
-## 📊 Test Coverage Breakdown
+## Test Coverage Breakdown
 
 ### Integration Tests (20+ tests)
 
@@ -286,9 +286,9 @@ npm run test:coverage
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
-### ❌ "Connection refused - ECONNREFUSED localhost:5000"
+### "Connection refused - ECONNREFUSED localhost:5000"
 
 **Problem:** Backend tidak running
 
@@ -306,7 +306,7 @@ curl http://localhost:5000/health
 
 ---
 
-### ❌ "Jest timeout exceeded (15000ms)"
+### "Jest timeout exceeded (15000ms)"
 
 **Problem:** API call terlalu lama (biasanya AI atau Payment)
 
@@ -329,7 +329,7 @@ Or globally di jest.config.js:
 
 ---
 
-### ❌ "Playwright browser not found"
+### "Playwright browser not found"
 
 **Problem:** Chromium browser belum ter-install
 
@@ -343,7 +343,7 @@ npx playwright install
 
 ---
 
-### ❌ "404 Not Found - /api/auth/login"
+### "404 Not Found - /api/auth/login"
 
 **Problem:** Auth routes belum mounted di backend
 
@@ -357,7 +357,7 @@ app.use("/api/auth", authRoutes); // Must be present!
 
 ---
 
-### ❌ "AI chatbot test fails - 500 error"
+### "AI chatbot test fails - 500 error"
 
 **Problem:** GEMINI_API_KEY tidak configured di backend
 
@@ -373,7 +373,7 @@ npm run dev
 
 ---
 
-### ❌ "Payment test fails - Midtrans error"
+### "Payment test fails - Midtrans error"
 
 **Problem:** MIDTRANS keys tidak configured
 
@@ -389,7 +389,7 @@ MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxxx
 
 ---
 
-### ❌ "E2E test fails - Element not found"
+### "E2E test fails - Element not found"
 
 **Problem:** Frontend UI structure berbeda atau element belum load
 
@@ -405,20 +405,20 @@ await page.waitForLoadState("networkidle");
 
 ---
 
-## 📁 Test Suite Structure
+## Test Suite Structure
 
 ```
 finished-project/
 ├── tests/
 │   ├── unit/
-│   │   └── currency.test.js         # ✅ 8 tests (utility functions)
+│   │   └── currency.test.js         #  8 tests (utility functions)
 │   ├── integration/
-│   │   ├── products.api.test.js     # ✅ 9 tests (Products CRUD)
-│   │   ├── auth.api.test.js         # ✅ 8 tests (JWT auth)
-│   │   ├── ai.chatbot.test.js       # ✅ 4 tests (Gemini AI)
-│   │   └── payment.api.test.js      # ✅ 5 tests (Midtrans)
+│   │   ├── products.api.test.js     #  9 tests (Products CRUD)
+│   │   ├── auth.api.test.js         #  8 tests (JWT auth)
+│   │   ├── ai.chatbot.test.js       #  4 tests (Gemini AI)
+│   │   └── payment.api.test.js      #  5 tests (Midtrans)
 │   └── e2e/
-│       └── checkout.flow.spec.js    # ✅ 10 tests (Full user flow)
+│       └── checkout.flow.spec.js    #  10 tests (Full user flow)
 ├── playwright.config.js
 ├── package.json
 ├── .env.example
@@ -429,41 +429,41 @@ finished-project/
 
 ---
 
-## 🎯 Test Scenarios Covered
+## Test Scenarios Covered
 
 ### Functional Testing
 
 **Products:**
 
-- ✅ List all products
-- ✅ Filter by category
-- ✅ Search by keyword
-- ✅ Filter by price range
-- ✅ Get product details
-- ✅ Handle invalid IDs
+- List all products
+- Filter by category
+- Search by keyword
+- Filter by price range
+- Get product details
+- Handle invalid IDs
 
 **Authentication:**
 
-- ✅ User registration
-- ✅ User login (JWT)
-- ✅ Get user profile (Protected route)
-- ✅ Token validation
-- ✅ Error handling (wrong password, duplicate email)
+- User registration
+- User login (JWT)
+- Get user profile (Protected route)
+- Token validation
+- Error handling (wrong password, duplicate email)
 
 **AI Chatbot:**
 
-- ✅ Send message to AI
-- ✅ Receive product recommendations
-- ✅ Input validation
-- ✅ Error handling
+- Send message to AI
+- Receive product recommendations
+- Input validation
+- Error handling
 
 **Payment:**
 
-- ✅ Create payment (Midtrans)
-- ✅ Payment redirect URL generated
-- ✅ Webhook notification
-- ✅ Data validation
-- ✅ Error handling
+- Create payment (Midtrans)
+- Payment redirect URL generated
+- Webhook notification
+- Data validation
+- Error handling
 
 ---
 
@@ -489,7 +489,7 @@ finished-project/
 
 ---
 
-## 🎓 What You'll Learn
+## What You'll Learn
 
 **Testing Strategies:**
 
@@ -514,7 +514,7 @@ finished-project/
 
 ---
 
-## 💡 Challenge untuk Peserta
+## Challenge untuk Peserta
 
 ### Challenge #1: Add Kemenkes API Test
 
@@ -567,7 +567,7 @@ Run: `k6 run tests/load/products-load.js`
 
 ---
 
-## 🔄 CI/CD Integration
+## CI/CD Integration
 
 **GitHub Actions Workflow:**
 
@@ -605,7 +605,7 @@ jobs:
 
 ---
 
-## 📖 Resources
+## Resources
 
 **Testing Best Practices:**
 
@@ -621,12 +621,12 @@ jobs:
 
 ---
 
-**Test early, test often - Ship dengan confidence! 🧪✅**
+**Test early, test often - Ship dengan confidence! **
 
 ---
 
-**📁 Repository:** `health-ecommerce-testing-suite`  
+** Repository:** `health-ecommerce-testing-suite`  
 **System:** Health E-Commerce MERN  
 **Backend:** localhost:5000 (ULTIMATE)  
 **Coverage:** 85%+ target  
-**Status:** Production-ready testing! ✅
+**Status:** Production-ready testing!

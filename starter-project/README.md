@@ -1,4 +1,4 @@
-# 🧪 Health E-Commerce - Testing Suite (STARTER)
+# Health E-Commerce - Testing Suite (STARTER)
 
 > **Practice Project: Learn testing dengan TODOs**
 
@@ -6,32 +6,32 @@
 
 ---
 
-## 🎯 **What You'll Learn**
+## **What You'll Learn**
 
 Di starter project ini, kamu akan practice:
 
-- ✅ **Unit Testing** - Test utility functions dengan Jest
-- ✅ **Integration Testing** - Test real API endpoints dengan Supertest
-- ✅ **E2E Testing** - Automate UI testing dengan Playwright
-- ✅ **AAA Pattern** - Arrange, Act, Assert
-- ✅ **Test Coverage** - Generate coverage reports
+- **Unit Testing** - Test utility functions dengan Jest
+- **Integration Testing** - Test real API endpoints dengan Supertest
+- **E2E Testing** - Automate UI testing dengan Playwright
+- **AAA Pattern** - Arrange, Act, Assert
+- **Test Coverage** - Generate coverage reports
 
 ---
 
-## 📁 **Project Structure**
+## **Project Structure**
 
 ```
 starter-project/
-├── package.json           ✅ All dependencies ready
-├── jest.config.js         ⚠️ TODO: Configure Jest
-├── playwright.config.js   ⚠️ TODO: Configure Playwright
+├── package.json            All dependencies ready
+├── jest.config.js          TODO: Configure Jest
+├── playwright.config.js    TODO: Configure Playwright
 ├── tests/
 │   ├── unit/
-│   │   └── currency.test.js      ⚠️ TODO: Complete 8 unit tests
+│   │   └── currency.test.js       TODO: Complete 8 unit tests
 │   ├── integration/
-│   │   └── products.test.js      ⚠️ TODO: Complete 6 API tests
+│   │   └── products.test.js       TODO: Complete 6 API tests
 │   └── e2e/
-│       └── shopping.spec.js      ⚠️ TODO: Complete 6 E2E tests
+│       └── shopping.spec.js       TODO: Complete 6 E2E tests
 └── README.md (This file!)
 ```
 
@@ -39,7 +39,7 @@ starter-project/
 
 ---
 
-## 🚀 **Quick Start**
+## **Quick Start**
 
 ### Step 1: Install Dependencies
 
@@ -72,7 +72,7 @@ npm run test:e2e
 
 ---
 
-## ✅ **Learning Path**
+## **Learning Path**
 
 ### Task 1: Unit Tests (Easy - 30 min)
 
@@ -95,7 +95,7 @@ npm run test:e2e
 npm run test:unit
 ```
 
-**Expected:** 8 tests pass! ✅
+**Expected:** 8 tests pass!
 
 ---
 
@@ -121,7 +121,7 @@ curl http://localhost:5000/health
 npm run test:integration
 ```
 
-**Expected:** 6 tests pass! ✅
+**Expected:** 6 tests pass!
 
 ---
 
@@ -151,11 +151,11 @@ npm run test:e2e
 npm run test:e2e:ui
 ```
 
-**Expected:** 6 tests pass! ✅
+**Expected:** 6 tests pass!
 
 ---
 
-## 💡 **Hints & Tips**
+## **Hints & Tips**
 
 ### Jest Basics:
 
@@ -198,7 +198,7 @@ await expect(page.locator("h1")).toBeVisible();
 
 ---
 
-## 🐛 **Troubleshooting**
+## **Troubleshooting**
 
 ### "Backend connection refused"
 
@@ -225,20 +225,20 @@ test("name", async () => {
 
 ---
 
-## ✅ **Success Criteria**
+## **Success Criteria**
 
 You're done when:
 
-- ✅ All 8 unit tests pass
-- ✅ All 6 integration tests pass
-- ✅ All 6 E2E tests pass
-- ✅ **Total: 20 tests pass!**
-- ✅ You understand test patterns
-- ✅ Ready for finished-project!
+- All 8 unit tests pass
+- All 6 integration tests pass
+- All 6 E2E tests pass
+- **Total: 20 tests pass!**
+- You understand test patterns
+- Ready for finished-project!
 
 ---
 
-## 📚 **Resources**
+## **Resources**
 
 - [Jest Documentation](https://jestjs.io/)
 - [Supertest Guide](https://github.com/ladjs/supertest)
@@ -247,18 +247,18 @@ You're done when:
 
 ---
 
-## 🚀 **Next Steps**
+## **Next Steps**
 
 After completing:
 
-1. ✅ Check finished-project untuk compare
-2. ✅ Run coverage: `npm run test:coverage`
-3. ✅ Add more test cases untuk extra practice
-4. ➡️ Modul 2: GitHub Workflow
+1.  Check finished-project untuk compare
+2.  Run coverage: `npm run test:coverage`
+3.  Add more test cases untuk extra practice
+4.  Modul 2: GitHub Workflow
 
 ---
 
-**Happy Testing! 🧪✅**
+**Happy Testing! **
 
 _Starter Project - Common Modul 1_  
 _Practice Testing with TODOs_
