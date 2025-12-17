@@ -1,5 +1,5 @@
 {
-  "name": "health-ecommerce-testing-starter",
+  "name": "komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing-starter",
   "version": "1.0.0",
   "description": "Testing Suite Starter - Practice writing tests for Health E-Commerce",
   "main": "index.js",
@@ -28,12 +28,5 @@
     "@playwright/test": "^1.41.0",
     "jest": "^29.7.0",
     "supertest": "^6.3.4"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "coverageDirectory": "coverage",
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ]
   }
 }

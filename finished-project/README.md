@@ -44,24 +44,111 @@ Testing suite ini mengcover **SELURUH SISTEM Health E-Commerce:**
 
 **WAJIB: Backend & Frontend Harus Running!**
 
+PENTING: Testing suite ini memerlukan backend final dari Modul 5 dan frontend final dari Modul 3 yang sudah complete. Pastikan keduanya running sebelum menjalankan tests.
+
+**Terminal 1: Setup dan Start Backend (Modul 5)**
+
 ```bash
-# Terminal 1: Start MongoDB
-mongod
+# 1. Navigate ke Backend Modul 5 (Final Backend Project)
+cd ../../backend/health-ecommerce-external-integration/finished-project
 
-# Terminal 2: Start ULTIMATE Backend
-cd ../../../Backend/Modul_5-External_API_Integration/finished-project
+# 2. Install dependencies (jika belum)
 npm install
-npm run seed    # Seed database with test data
-npm run dev     # Start backend di port 5000
 
-# Terminal 3: Start Frontend (pilih salah satu)
-cd ../../../Frontend/Modul_3-UIUX_Best_Practices/finished-project
-npm install
-npm run dev     # Start frontend di port 3000
+# 3. Setup .env file dengan API keys yang diperlukan:
+# Buat file .env di folder finished-project backend
+# Isi dengan:
+# PORT=5000
+# MONGODB_URI=mongodb://localhost:27017/health_ecommerce
+# JWT_SECRET=your_jwt_secret_key
+# GEMINI_API_KEY=your_google_gemini_api_key
+# MIDTRANS_SERVER_KEY=your_midtrans_server_key
+# MIDTRANS_CLIENT_KEY=your_midtrans_client_key
+# CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+# CLOUDINARY_API_KEY=your_cloudinary_api_key
+# CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
-#  Backend: http://localhost:5000
-#  Frontend: http://localhost:3000
+# 4. Pastikan MongoDB running
+# PENTING: MongoDB harus running sebelum menjalankan backend dan tests
+# 
+# Opsi A (RECOMMENDED): Menggunakan MongoDB Compass atau MongoDB Atlas
+# - Buka MongoDB Compass
+# - Connect ke database: mongodb://localhost:27017
+# - Jika berhasil connect, berarti MongoDB sudah running
+# - Atau gunakan connection string dari MongoDB Atlas jika menggunakan cloud database
+# 
+# Opsi B: Menggunakan MongoDB Service (Windows Service / macOS Service)
+# - Pastikan MongoDB service sudah running di system services
+# - Windows: Check Services app, cari "MongoDB"
+# - macOS: Check Activity Monitor atau system preferences
+# 
+# Opsi C: Menggunakan mongod command (jika opsi A dan B tidak tersedia)
+# - Buka terminal baru
+# - Jalankan: mongod
+# - Pastikan MongoDB service running
+# 
+# CATATAN: Jika mongod tidak jalan di local, tidak perlu dipaksakan
+# Gunakan MongoDB Compass untuk cek apakah database sudah accessible
+# Atau gunakan MongoDB Atlas (cloud) sebagai alternatif
+
+# 5. Seed database dengan sample data
+npm run seed
+
+# 6. Start backend server (keep running di terminal ini!)
+npm run dev
+
+# Backend akan running di: http://localhost:5000
+# Pastikan backend URL ini sama dengan BASE_URL di testing .env
 ```
+
+**VERIFIKASI BACKEND:**
+```bash
+# Test backend health endpoint
+curl http://localhost:5000/health
+
+# Jika berhasil, akan return: { "status": "ok" } atau { "success": true, "message": "Server is running" }
+```
+
+**Terminal 2: Setup dan Start Frontend (Modul 3)**
+
+```bash
+# 1. Navigate ke Frontend Modul 3 (Final Frontend Project)
+cd ../../frontend/health-ecommerce-production-uiux/finished-project
+
+# 2. Install dependencies (jika belum)
+npm install
+
+# 3. Setup .env file:
+# Buat file .env di folder finished-project frontend
+# Isi dengan:
+# VITE_API_URL=http://localhost:5000
+
+# PENTING: Pastikan VITE_API_URL sama dengan backend yang sedang running!
+# Jika backend running di port lain, update VITE_API_URL sesuai dengan port backend yang digunakan
+
+# 4. Start frontend development server (keep running di terminal ini!)
+npm run dev
+
+# Frontend akan running di: http://localhost:3000
+# Pastikan frontend URL ini sama dengan FRONTEND_URL di testing .env
+```
+
+**VERIFIKASI FRONTEND:**
+```bash
+# Test frontend
+curl http://localhost:3000
+
+# Atau buka browser: http://localhost:3000
+# Pastikan frontend bisa load dan connect ke backend
+```
+
+**PENTING:**
+- Backend HARUS running di http://localhost:5000 sebelum menjalankan integration tests
+- Frontend HARUS running di http://localhost:3000 sebelum menjalankan E2E tests
+- Pastikan .env di testing project memiliki:
+  - BASE_URL=http://localhost:5000 (untuk backend)
+  - FRONTEND_URL=http://localhost:3000 (untuk frontend)
+- Jika backend atau frontend running di port lain, update .env sesuai dengan port yang digunakan
 
 ---
 
@@ -69,8 +156,8 @@ npm run dev     # Start frontend di port 3000
 
 ```bash
 # 1. Clone repository testing suite
-git clone https://github.com/your-username/health-ecommerce-testing-suite.git
-cd health-ecommerce-testing-suite
+git clone https://github.com/your-username/komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing.git
+cd komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing
 
 # 2. Masuk ke finished-project
 cd finished-project
@@ -86,6 +173,8 @@ cp .env.example .env
 # Edit .env jika perlu (biasanya defaults sudah OK)
 
 # 6. Run tests!
+# PENTING: Pastikan kamu berada di folder finished-project!
+# Jika error "Missing script: test", pastikan kamu di folder yang benar
 npm test
 ```
 
@@ -287,6 +376,33 @@ npm run test:coverage
 ---
 
 ## Troubleshooting
+
+### "Missing script: test" atau "npm error Missing script: test"
+
+**Problem:** Kamu menjalankan `npm test` di folder yang salah (root folder, bukan finished-project)
+
+**Fix:**
+```bash
+# Pastikan kamu berada di folder finished-project
+cd finished-project
+
+# Verifikasi package.json ada
+ls package.json
+# Atau di Windows PowerShell: dir package.json
+# Atau di Windows CMD: dir package.json
+
+# Sekarang jalankan test
+npm test
+```
+
+**Verifikasi:**
+```bash
+# Cek apakah package.json ada dan berisi script "test"
+cat package.json | grep test
+# Atau di Windows: type package.json | findstr test
+```
+
+---
 
 ### "Connection refused - ECONNREFUSED localhost:5000"
 
@@ -625,7 +741,7 @@ jobs:
 
 ---
 
-** Repository:** `health-ecommerce-testing-suite`  
+** Repository:** `komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing`  
 **System:** Health E-Commerce MERN  
 **Backend:** localhost:5000 (ULTIMATE)  
 **Coverage:** 85%+ target  

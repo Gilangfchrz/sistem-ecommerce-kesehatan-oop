@@ -1,6 +1,6 @@
-# health-ecommerce-complete-testing
+# komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing
 
-> **Complete Testing Suite untuk Health E-Commerce MERN System**
+> Complete Testing Suite untuk Health E-Commerce MERN System
 
 [![Jest](https://img.shields.io/badge/Jest-29.7-green)](https://jestjs.io/)
 [![Supertest](https://img.shields.io/badge/Supertest-6.3-blue)](https://github.com/ladjs/supertest)
@@ -17,7 +17,7 @@ Comprehensive testing suite covering unit tests, integration tests, dan end-to-e
 Repository ini berisi **2 versi project**:
 
 ```
-health-ecommerce-complete-testing/
+komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing/
 ├── README.md (Ini file yang kamu baca)
 ├── starter-project/     #  Basic test setup (dengan TODO)
 │   ├── README.md
@@ -67,28 +67,117 @@ Sebelum mulai, pastikan:
 - Harus running untuk integration & E2E tests!
 - **Frontend running** di `http://localhost:3000` (untuk E2E tests)
 - Repository: `health-ecommerce-production-uiux` (Frontend Modul 3)
-- **MongoDB running** (untuk integration tests)
+- **MongoDB accessible** (untuk integration tests)
+  - Bisa menggunakan MongoDB Compass, MongoDB Atlas, atau MongoDB service
+  - Tidak perlu menjalankan `mongod` command jika sudah accessible dengan cara lain
 
-** Setup System (jika belum):**
+** Setup System (WAJIB Running):**
+
+PENTING: Testing suite ini memerlukan backend final dari Modul 5 dan frontend final dari Modul 3 yang sudah complete. Pastikan keduanya running sebelum menjalankan tests.
+
+**Terminal 1: Setup dan Start Backend (Modul 5)**
 
 ```bash
-# Terminal 1: Start MongoDB
-mongod
+# 1. Navigate ke Backend Modul 5 (Final Backend Project)
+cd ../../backend/health-ecommerce-external-integration/finished-project
 
-# Terminal 2: Start Backend
-cd ../../Backend/Modul_5-External_API_Integration/finished-project
+# 2. Install dependencies (jika belum)
 npm install
-npm run seed    # Seed database
-npm run dev     # Port 5000
 
-# Terminal 3: Start Frontend
-cd ../../Frontend/Modul_3-UIUX_Best_Practices/finished-project
-npm install
-npm run dev     # Port 3000
+# 3. Setup .env file dengan API keys yang diperlukan:
+# Buat file .env di folder finished-project backend
+# Isi dengan:
+# PORT=5000
+# MONGODB_URI=mongodb://localhost:27017/health_ecommerce
+# JWT_SECRET=your_jwt_secret_key
+# GEMINI_API_KEY=your_google_gemini_api_key
+# MIDTRANS_SERVER_KEY=your_midtrans_server_key
+# MIDTRANS_CLIENT_KEY=your_midtrans_client_key
+# CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+# CLOUDINARY_API_KEY=your_cloudinary_api_key
+# CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
-#  Backend: http://localhost:5000
-#  Frontend: http://localhost:3000
+# 4. Pastikan MongoDB running
+# PENTING: MongoDB harus running sebelum menjalankan backend dan tests
+# 
+# Opsi A (RECOMMENDED): Menggunakan MongoDB Compass atau MongoDB Atlas
+# - Buka MongoDB Compass
+# - Connect ke database: mongodb://localhost:27017
+# - Jika berhasil connect, berarti MongoDB sudah running
+# - Atau gunakan connection string dari MongoDB Atlas jika menggunakan cloud database
+# 
+# Opsi B: Menggunakan MongoDB Service (Windows Service / macOS Service)
+# - Pastikan MongoDB service sudah running di system services
+# - Windows: Check Services app, cari "MongoDB"
+# - macOS: Check Activity Monitor atau system preferences
+# 
+# Opsi C: Menggunakan mongod command (jika opsi A dan B tidak tersedia)
+# - Buka terminal baru
+# - Jalankan: mongod
+# - Pastikan MongoDB service running
+# 
+# CATATAN: Jika mongod tidak jalan di local, tidak perlu dipaksakan
+# Gunakan MongoDB Compass untuk cek apakah database sudah accessible
+# Atau gunakan MongoDB Atlas (cloud) sebagai alternatif
+
+# 5. Seed database dengan sample data
+npm run seed
+
+# 6. Start backend server (keep running di terminal ini!)
+npm run dev
+
+# Backend akan running di: http://localhost:5000
+# Pastikan backend URL ini sama dengan BASE_URL di testing .env
 ```
+
+**VERIFIKASI BACKEND:**
+```bash
+# Test backend health endpoint
+curl http://localhost:5000/health
+
+# Jika berhasil, akan return: { "status": "ok" } atau { "success": true, "message": "Server is running" }
+```
+
+**Terminal 2: Setup dan Start Frontend (Modul 3)**
+
+```bash
+# 1. Navigate ke Frontend Modul 3 (Final Frontend Project)
+cd ../../frontend/health-ecommerce-production-uiux/finished-project
+
+# 2. Install dependencies (jika belum)
+npm install
+
+# 3. Setup .env file:
+# Buat file .env di folder finished-project frontend
+# Isi dengan:
+# VITE_API_URL=http://localhost:5000
+
+# PENTING: Pastikan VITE_API_URL sama dengan backend yang sedang running!
+# Jika backend running di port lain, update VITE_API_URL sesuai dengan port backend yang digunakan
+
+# 4. Start frontend development server (keep running di terminal ini!)
+npm run dev
+
+# Frontend akan running di: http://localhost:3000
+# Pastikan frontend URL ini sama dengan FRONTEND_URL di testing .env
+```
+
+**VERIFIKASI FRONTEND:**
+```bash
+# Test frontend
+curl http://localhost:3000
+
+# Atau buka browser: http://localhost:3000
+# Pastikan frontend bisa load dan connect ke backend
+```
+
+**PENTING:**
+- Backend HARUS running di http://localhost:5000 sebelum menjalankan integration tests
+- Frontend HARUS running di http://localhost:3000 sebelum menjalankan E2E tests
+- Pastikan .env di testing project memiliki:
+  - BASE_URL=http://localhost:5000 (untuk backend)
+  - FRONTEND_URL=http://localhost:3000 (untuk frontend)
+- Jika backend atau frontend running di port lain, update .env sesuai dengan port yang digunakan
 
 ---
 
@@ -96,13 +185,16 @@ npm run dev     # Port 3000
 
 ```bash
 # 1. Clone repository ini
-git clone https://github.com/your-username/health-ecommerce-complete-testing.git
+git clone https://github.com/your-username/komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing.git
 
 # 2. Masuk ke folder repository
-cd health-ecommerce-complete-testing
+cd komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing
 
 # 3. Masuk ke starter-project
 cd starter-project
+
+# PENTING: Pastikan kamu berada di folder starter-project sebelum menjalankan npm commands!
+# Verifikasi dengan: ls package.json (harus ada file package.json)
 
 # 4. Install dependencies
 npm install
@@ -115,6 +207,8 @@ cp .env.example .env
 # Defaults sudah OK (localhost:5000, localhost:3000)
 
 # 7. Run tests (backend & frontend must be running!)
+# PENTING: Pastikan kamu berada di folder starter-project!
+# Jika belum, jalankan: cd starter-project
 npm test
 ```
 
@@ -124,13 +218,16 @@ npm test
 
 ```bash
 # 1. Clone repository (jika belum)
-git clone https://github.com/your-username/health-ecommerce-complete-testing.git
+git clone https://github.com/your-username/komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing.git
 
 # 2. Masuk ke folder repository
-cd health-ecommerce-complete-testing
+cd komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing
 
 # 3. Masuk ke finished-project
 cd finished-project
+
+# PENTING: Pastikan kamu berada di folder finished-project sebelum menjalankan npm commands!
+# Verifikasi dengan: ls package.json (harus ada file package.json)
 
 # 4. Install dependencies
 npm install
@@ -146,6 +243,8 @@ cp .env.example .env
 # Check: curl http://localhost:3000
 
 # 8. Run all tests
+# PENTING: Pastikan kamu berada di folder finished-project!
+# Jika belum, jalankan: cd finished-project
 npm test
 
 # 9. Run dengan coverage
@@ -375,6 +474,37 @@ finished-project/
 
 ## Troubleshooting
 
+### "Missing script: test" atau "npm error Missing script: test"
+
+**Problem:** Kamu menjalankan `npm test` di folder yang salah (root folder, bukan starter-project atau finished-project)
+
+**Fix:**
+```bash
+# Pastikan kamu berada di folder yang benar
+# Untuk starter-project:
+cd starter-project
+
+# Atau untuk finished-project:
+cd finished-project
+
+# Verifikasi package.json ada
+ls package.json
+# Atau di Windows PowerShell: dir package.json
+# Atau di Windows CMD: dir package.json
+
+# Sekarang jalankan test
+npm test
+```
+
+**Verifikasi:**
+```bash
+# Cek apakah package.json ada dan berisi script "test"
+cat package.json | grep test
+# Atau di Windows: type package.json | findstr test
+```
+
+---
+
 ### "Connection refused - localhost:5000"
 
 **Solusi:**
@@ -530,7 +660,7 @@ _Part of Health E-Commerce Common Series_
 
 ** Repository Info:**
 
-- **Name:** `health-ecommerce-complete-testing`
+- **Name:** `komdigi-fsd-intermediate-modul-1-common-health-ecommerce-complete-testing`
 - **Type:** Testing Suite
 - **Tests:** Health E-Commerce system (Backend + Frontend)
 - **Structure:** 1 Repo, 2 Folders (starter + finished)

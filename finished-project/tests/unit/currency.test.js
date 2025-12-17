@@ -40,17 +40,21 @@ describe('Currency Utils - Unit Tests', () => {
     
     test('formats Indonesian Rupiah correctly', () => {
       const result = formatCurrency(85000);
-      expect(result).toBe('Rp85.000');
+      // Intl.NumberFormat output may vary by system (with/without space)
+      // Accept both "Rp 85.000" and "Rp85.000"
+      expect(result).toMatch(/^Rp\s?85\.000$/);
     });
 
     test('handles large numbers', () => {
       const result = formatCurrency(1000000);
-      expect(result).toBe('Rp1.000.000');
+      // Accept both "Rp 1.000.000" and "Rp1.000.000"
+      expect(result).toMatch(/^Rp\s?1\.000\.000$/);
     });
 
     test('handles zero', () => {
       const result = formatCurrency(0);
-      expect(result).toBe('Rp0');
+      // Accept both "Rp 0" and "Rp0"
+      expect(result).toMatch(/^Rp\s?0$/);
     });
 
     test('throws error for non-number input', () => {
