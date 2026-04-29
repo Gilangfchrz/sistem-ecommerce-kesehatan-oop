@@ -19,6 +19,8 @@ Digunakan untuk menangani dependensi antar objek. Objek `Product` bertindak seba
 ### 3. Singleton Pattern
 Diterapkan pada `Inventory.js` untuk memastikan hanya ada satu instance inventaris yang mengelola seluruh data produk di dalam aplikasi, menjaga integritas data stok.
 
+![Hasil Running Program](./assets/output-test.png)
+
 ## 📂 Struktur Folder
 ```text
 product-management-system/
@@ -29,4 +31,4 @@ product-management-system/
 └── test.js            # Main entry point untuk pengujian sistem
 
 
-![Hasil Running Program](./assets/output-test.png)
+
