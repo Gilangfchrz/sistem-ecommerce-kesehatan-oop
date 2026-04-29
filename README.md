@@ -29,5 +29,4 @@ product-management-system/
 └── test.js            # Main entry point untuk pengujian sistem
 
 
-## Hasil Pengujian (Output)
 ![Hasil Running Program](./assets/output-test.png)
